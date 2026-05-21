@@ -1,103 +1,63 @@
 # SafePasswords
 
-[![Go Version](https://img.shields.io/badge/Go-1.26.3-00ADD8?logo=go)](https://golang.org)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos-lightgrey)]()
+![Go](https://img.shields.io/badge/Go-1.26-blue?logo=go)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows)
+![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
+![macOS](https://img.shields.io/badge/macOS-000000?logo=apple)
 
-Зашифрованный менеджер паролей с TUI-интерфейсом. Хранит пароли в AES-GCM, ключи выводятся через Argon2id.
+Менеджер паролей в терминале. Всё шифруется, ничего не улетает в интернет.
 
-## Возможности
+## Что внутри
 
-- Хранение паролей в зашифрованном vault (AES-256-GCM + Argon2id)
-- Интерактивный TUI (терминальный интерфейс на bubbletea)
-- CLI-режим для скриптов
-- Генератор надёжных паролей
-- Поиск по названиям, логинам и URL
-- Импорт/экспорт отсутствует (преднамеренно — vault привязан к файлу)
+- AES-256-GCM + Argon2id — ключи выводит, данные шифрует
+- TUI на bubbletea — мышка не нужна, всё с клавиатуры
+- CLI-режим — для скриптов и быстрых команд
+- Генератор паролей — длина, регистр, цифры, символы
 
-## Установка
+## Как собрать
 
 ```bash
-git clone https://github.com/yourname/safepasswords.git
+git clone https://github.com/vksmitov/safepasswords.git
 cd safepasswords
 go build -o passman.exe .
 ```
 
-## Использование
-
-### TUI-режим
+## Как пользоваться
 
 ```bash
+# TUI — интерактивный режим
 go run main.go
+
+# CLI — команды
+go run main.go init          # создать хранилище
+go run main.go add           # добавить запись
+go run main.go list          # список записей
+go run main.go get <имя>     # найти запись
+go run main.go edit <имя>    # изменить запись
+go run main.go delete <имя>  # удалить запись
+go run main.go generate      # сгенерировать пароль
+go run main.go reset          # сменить мастер-пароль
 ```
 
-Открывает интерактивный интерфейс. Управление — клавиатура.
+## Горячие клавиши в TUI
 
-| Клавиша | Действие |
-|---------|----------|
-| `↑` / `↓` | Навигация |
-| `Enter` | Выбрать / подтвердить |
-| `Tab` / `Shift+Tab` | Следующее / предыдущее поле |
-| `Esc` / `q` | Назад / выход |
-| `y` / `n` | Подтверждение удаления |
-| `e` | Редактировать запись |
-| `d` | Удалить запись |
-| `Space` | Вкл/выкл опцию генерации |
-| `g` | Сгенерировать пароль |
+| Клавиша | Что делает |
+|---------|-----------|
+| `↑` `↓` | Выбрать пункт |
+| `Enter` | Подтвердить |
+| `Tab` | Следующее поле |
+| `e` | Редактировать |
+| `d` | Удалить |
+| `q` / `Esc` | Назад / выход |
 
-### CLI-режим
+## Куда сохраняется
 
-```bash
-# Инициализация хранилища
-go run main.go init
+`passwords/vault.enc` — зашифрованные данные
+`passwords/vault.meta` — соль, nonce, параметры Argon2
 
-# Добавить запись (интерактивный ввод)
-go run main.go add
+Никаких облаков, никаких серверов. Всё локально.
 
-# Найти запись
-go run main.go get <название>
+## Автор
 
-# Список записей
-go run main.go list
-
-# Редактировать запись
-go run main.go edit <название>
-
-# Удалить запись
-go run main.go delete <название>
-
-# Сгенерировать пароль
-go run main.go generate --len 24 --symbols
-
-# Сбросить мастер-пароль
-go run main.go reset
-```
-
-## Шифрование
-
-- **Key derivation**: Argon2id (3 прохода, 64 MB памяти)
-- **Encryption**: AES-256-GCM
-- **Salt + Nonce**: случайные, 16 + 12 байт
-- **Vault**: хранится в `passwords/vault.enc`, метаданные — в `passwords/vault.meta`
-
-## Структура проекта
-
-```
-├── main.go              # Точка входа
-├── internal/
-│   ├── app.go           # CLI-обработчики
-│   ├── tui.go           # TUI (bubbletea)
-│   ├── crypto.go        # Argon2id + AES-GCM
-│   ├── generator.go     # Генератор паролей
-│   ├── logging.go       # Логирование (slog)
-│   ├── models.go        # Entry, Vault, VaultMeta
-│   └── storage.go       # Чтение/запись vault
-```
-
-## Зависимости
-
-- [charmbracelet/bubbletea](https://github.com/charmbracelet/bubbletea) — TUI-фреймворк
-- [charmbracelet/bubbles](https://github.com/charmbracelet/bubbles) — компоненты TUI
-- [charmbracelet/lipgloss](https://github.com/charmbracelet/lipgloss) — стилизация
-- [golang.org/x/crypto](https://pkg.go.dev/golang.org/x/crypto) — Argon2id
-- [golang.org/x/term](https://pkg.go.dev/golang.org/x/term) — чтение пароля
+[@vksmitov](https://github.com/vksmitov)
